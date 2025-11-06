@@ -13,9 +13,18 @@ const PORT = process.env.PORT || 3001;
 app.use(helmet());
 app.use(compression());
 app.use(morgan('combined'));
+
+// Enhanced CORS setup
+const allowedOrigin = process.env.CORS_ORIGIN || 'http://localhost:3000';
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000'
+  origin: allowedOrigin,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+// Handle preflight requests
+app.options('*', cors());
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -36,7 +45,6 @@ app.use('/api/auth', authRouter);
 app.use('/api/crf', crfRouter);
 app.use('/api/patients', patientsRouter);
 app.use('/api/doctor', doctorRouter);
-
 
 app.get('/api/health', (req, res) => {
   res.json({ 
