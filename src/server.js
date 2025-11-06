@@ -18,7 +18,7 @@ app.use(morgan('combined'));
 const allowedOrigin = process.env.CORS_ORIGIN || 'http://localhost:3000';
 app.use(cors({
   origin: allowedOrigin,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
