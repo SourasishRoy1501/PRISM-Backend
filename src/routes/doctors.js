@@ -55,7 +55,7 @@ router.get('/appointments', async (req, res) => {
     }
 
     for (let i = 1; i <= 31; i++) {
-        const filteredFollowup = followups.filter((followup) => followup.scheduled_date == (year + '-' + month + '-' + (i < 10 ? ('0' + i) : i)))
+        const filteredFollowup = followups.filter((followup) => followup.scheduled_date == (year + '-' + (month < 10 ? ('0' + month) : month) + '-' + (i < 10 ? ('0' + i) : i)))
 
         const filteredPatientDetails = filteredFollowup.map((followup) => {
             const patientDetail =  patientDetails.filter((patientDetail) => followup.patient_id === patientDetail.patient_id)
