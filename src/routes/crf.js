@@ -80,8 +80,6 @@ router.patch('/edit', async (req, res) => {
 
 
 router.post('/male_sexual_dysfunction', async (req, res) => {
-
-  const today = new Date();
   let patientData = null
 
   if(req.body.is_first_time) {
@@ -112,6 +110,42 @@ router.post('/male_sexual_dysfunction', async (req, res) => {
     .insert(payload)
     .select()
     
+  if (insertError) return res.status(500).json({ error: insertError.message })
+
+  return res.json({ success: true, data })
+})
+
+router.post('/renal_disease', async (req, res) => {
+  let patientData = null
+
+  if(req.body.is_first_time) {
+    const patientPayload = generatePatientPayload(req.body)
+    const { data: patientDetails, insertError: patientError } = await createPatient(patientPayload)
+    if (patientError) return res.status(500).json({ error: patientError.message })
+    patientData = patientDetails[0]
+  } else {
+    patientData = { patient_id: req.body.patient_id }
+  }
+
+  if (!supabaseAdmin) return res.status(500).json({ error: 'Server not configured' })
+
+  // Persist as a followup record with type renal_disease
+  const payload = {
+    patient_id: patientData.patient_id,
+    doctor_id: req.body.user_id,
+    scheduled_date: req.body.selectedDate != '' ? new Date(req.body.selectedDate) : Date.now(),
+    status: Date.now() > new Date(req.body.selectedDate) ? 'completed': 'upcoming',
+    crf_data: req.body.data,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    is_initial: req.body.is_first_time
+  }
+
+  const { data, error: insertError } = await supabaseAdmin
+    .from('followups')
+    .insert(payload)
+    .select()
+
   if (insertError) return res.status(500).json({ error: insertError.message })
 
   return res.json({ success: true, data })

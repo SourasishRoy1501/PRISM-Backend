@@ -103,9 +103,10 @@ router.get('/getRecentAppointments', async (req, res) => {
     .select('condition_type', { count: 'exact' })
     .eq('doctor_id', req.query?.doctor_id);
     
-    const totalCount = patientData.length;
+    const totalCount = patientData?.length;
     const infertilityCount = patientData.filter(p => p.condition_type === 'male_infertility').length;
     const dysfunctionCount = patientData.filter(p => p.condition_type === 'male_sexual_dysfunction').length;
+    const renalCount = patientData.filter(p => p.condition_type === 'renal_disease').length;
 
     const { data, error: countError } = await supabaseAdmin
         .from('followups')
@@ -135,6 +136,7 @@ router.get('/getRecentAppointments', async (req, res) => {
         totalCount,
         infertilityCount,
         dysfunctionCount,
+        renalCount,
         appointmentCount,
         countData,
         nextDaysCount: data?.length
